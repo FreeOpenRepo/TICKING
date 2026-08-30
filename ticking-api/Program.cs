@@ -42,11 +42,25 @@ builder.Services.AddScoped<SeatHoldService>();
 var app = builder.Build();
 
 // Ensure Database is Created
-using (var scope = app.Services.CreateScope())
+app.Lifetime.ApplicationStarted.Register(async () =>
 {
-    var db = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
-    db.Database.EnsureCreated();
-}
+    for (int i = 0; i < 5; i++)
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
+            await db.Database.EnsureCreatedAsync();
+            app.Logger.LogInformation("TICKING Database connected and verified successfully.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogWarning("TICKING DB initialization attempt {Attempt} failed: {Message}. Retrying...", i + 1, ex.Message);
+            await Task.Delay(2000);
+        }
+    }
+});
 
 app.UseCors();
 
@@ -163,4 +177,5 @@ app.Run();
 public record HoldSeatDto(string? CustomerName, string? CustomerEmail);
 public record ConfirmOrderDto(List<int> SeatIds, string? CustomerName, string? CustomerEmail, string? PaymentTransactionId);
 public record GateScanDto(string QrPayload);
+
 
