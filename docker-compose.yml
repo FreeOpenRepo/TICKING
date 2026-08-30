@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ticking_postgres_data:/var/lib/postgresql/data
+      - ticking_postgres_data:/var/lib/postgresql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "ticking_db"]
@@ -60,5 +60,6 @@ volumes:
 networks:
   ticking-network:
     driver: bridge
+
 
 
