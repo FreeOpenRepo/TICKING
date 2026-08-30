@@ -30,7 +30,8 @@ services:
       - "5080:5080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5080
+      - ASPNETCORE_URLS=http://0.0.0.0:5080
+      - ASPNETCORE_HTTP_PORTS=5080
       - ConnectionStrings__PostgresConnection=Host=ticking-db;Port=5432;Database=ticking_db;Username=postgres;Password=postgres
     depends_on:
       ticking-db:
@@ -60,6 +61,7 @@ volumes:
 networks:
   ticking-network:
     driver: bridge
+
 
 
 
