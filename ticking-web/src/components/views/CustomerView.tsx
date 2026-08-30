@@ -1,3 +1,4 @@
+import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -63,7 +64,7 @@ export default function CustomerView() {
           // Release held seats on local timeout
           heldSeats.forEach(s => releaseSeat(s.id).catch(() => {}));
           setHeldSeats([]);
-          alert('⏰ Hold token expired (600s TTL). Seats released back to available pool.');
+          showInfo('แจ้งเตือนระบบ', '⏰ Hold token expired (600s TTL). Seats released back to available pool.');
           return 0;
         }
         return prev - 1;
@@ -92,13 +93,13 @@ export default function CustomerView() {
         setHeldSeats(prev => prev.filter(s => s.id !== seat.id));
         await loadSeats();
       } catch (err: any) {
-        alert(err.message);
+        showInfo('แจ้งเตือนระบบ', err.message);
       }
       return;
     }
 
     if (seat.status === 'HELD' && !heldSeats.some(s => s.id === seat.id)) {
-      alert(`Seat ${seat.seatCode} is currently held by another user.`);
+      showInfo('แจ้งเตือนระบบ', `Seat ${seat.seatCode} is currently held by another user.`);
       return;
     }
 
@@ -108,7 +109,7 @@ export default function CustomerView() {
       setHeldSeats(prev => [...prev, updated]);
       await loadSeats();
     } catch (err: any) {
-      alert('Hold rejected: ' + err.message);
+      showInfo('แจ้งเตือนระบบ', 'Hold rejected: ' + err.message);
     }
   }
 
@@ -129,7 +130,7 @@ export default function CustomerView() {
       await loadSeats();
       confetti({ particleCount: 90, spread: 100, origin: { y: 0.6 } });
     } catch (err: any) {
-      alert('Payment failed: ' + err.message);
+      showInfo('แจ้งเตือนระบบ', 'Payment failed: ' + err.message);
     } finally {
       setIsProcessing(false);
     }
@@ -367,3 +368,4 @@ export default function CustomerView() {
     </div>
   );
 }
+

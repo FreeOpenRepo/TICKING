@@ -1,3 +1,4 @@
+import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -56,7 +57,7 @@ export default function GateScannerView() {
     if (parts.length >= 6) {
       parts[2] = 'hacker.tampered@evil.com';
       setManualPayload(parts.join('|'));
-      alert('⚠️ Tampered with ticket email! HMAC signature will fail verification.');
+      showInfo('แจ้งเตือนระบบ', '⚠️ Tampered with ticket email! HMAC signature will fail verification.');
     }
   }
 
@@ -191,3 +192,4 @@ export default function GateScannerView() {
     </div>
   );
 }
+
