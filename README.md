@@ -29,6 +29,68 @@ flowchart TD
 
 ---
 
+## 🗄️ Database Design & Entity Relationships (PostgreSQL 18)
+
+### 1. Entity-Relationship Diagram (ER Diagram)
+
+```mermaid
+erDiagram
+    Events ||--o{ Seats : "contains arena seats"
+    Seats ||--o{ Tickets : "issued for confirmed seat"
+
+    Events {
+        int Id PK
+        string EventCode UK
+        string Title
+        string VenueName
+        timestamp EventDate
+        timestamp CreatedAt
+    }
+
+    Seats {
+        int Id PK
+        int EventId FK
+        string SeatNumber
+        string Zone
+        string Row
+        numeric Price
+        string Status
+        string HoldToken
+        string HeldByUserId
+        timestamp HoldExpiresAt
+        int Version
+    }
+
+    Tickets {
+        int Id PK
+        string TicketNumber UK
+        int SeatId FK
+        string CustomerName
+        string CustomerEmail
+        string HmacSignature
+        string QrCodeBase64
+        boolean IsCheckedIn
+        timestamp CheckedInAt
+        timestamp PurchasedAt
+    }
+```
+
+### 2. รายละเอียดตารางและความสัมพันธ์ (Schema & Relationships)
+- **`Events` (อีเวนต์และคอนเสิร์ต)**:
+  - เก็บข้อมูลชื่อการแสดง, รหัสงาน (`EventCode`), สถานที่จัดงาน (`VenueName`), และวันเวลาแสดง
+  - ความสัมพันธ์: `1 Event` มีหลาย `Seats`
+- **`Seats` (ที่นั่งในฮอลล์การแสดง)**:
+  - Foreign Key: `EventId` ➔ `Events(Id)`
+  - Unique Constraint: `(EventId, SeatNumber)` ป้องกันการสร้างที่นั่งซ้ำในงานเดียวกัน
+  - ฟิลด์สถานะ: `AVAILABLE`, `HELD`, `CONFIRMED`, `CHECKED_IN`
+  - มี `HoldToken`, `HeldByUserId`, `HoldExpiresAt` สำหรับ Invariant `HoldTokenTtlExact600Seconds`
+  - มี `Version` สำหรับ Optimistic Concurrency Control ร่วมกับ Invariant `StrictlyZeroDoubleBooking`
+- **`Tickets` (ตั๋วเข้าชมงาน)**:
+  - Foreign Key: `SeatId` ➔ `Seats(Id)`
+  - เก็บดิจิทัลซิกเนเจอร์ `HmacSignature` (สร้างจาก HMAC-SHA256 ป้องกันการปลอมตั๋ว), รูปภาพ QR Code และสถานะการสแกนเข้าประตู (`IsCheckedIn`)
+
+---
+
 ## 🛡️ กฎเหล็กของระบบ (Domain Invariants)
 
 1. **`StrictlyZeroDoubleBooking` (ห้ามเกิดการจองซ้ำซ้อน 0.00% เด็ดขาด)**:
@@ -42,6 +104,7 @@ flowchart TD
 
 | ส่วนประกอบ | เทคโนโลยีที่เลือก | เหตุผลที่เลือก | ข้อดีหลัก (Advantages) |
 |---|---|---|---|
+| **Database** | **PostgreSQL 18** | มาตรฐาน RDBMS รองรับ Row-Level Locking (`FOR UPDATE`) และ Indexing ความเร็วสูง | มี Auto-Init Script (`db/init.sql`) พร้อมผังที่นั่งตัวอย่าง |
 | **Frontend Map** | **Next.js 16 + react-konva** | เรนเดอร์ผังที่นั่งความจุ 50,000 ที่นั่งด้วย HTML5 Canvas 2D/WebGL | เลื่อน ซูม และคลิกเลือกที่นั่งได้ลื่นไหล 60 FPS ไม่กิน Memory เหมือน DOM ธรรมดา |
 | **Payment Gateway** | **@stripe/stripe-js** | ระบบรับชำระเงินระดับโลกที่ปลอดภัย รองรับบัตรเครดิตและพร้อมเพย์ | มี Webhook ยืนยันยอดเงินที่เชื่อถือได้และได้มาตรฐาน PCI-DSS Level 1 |
 | **Backend API** | **.NET 10 (Native AOT)** | คอมไพล์เป็น Machine Code โดยตรง (Ahead-of-Time Compilation) | เริ่มต้นระบบได้ใน 10ms ใช้ RAM น้อยมาก ตอบสนองต่อ Request ได้เร็วระดับไมโครวินาที |
@@ -50,6 +113,24 @@ flowchart TD
 
 ---
 
-## 🚀 สรุปสถาปัตยกรรม (Architecture Highlights)
+## 🚀 วิธีการรันระบบ (Quick Start)
 
-- **Extreme Concurrency**: ออกแบบมาเพื่อรับมือกับ Traffic Spike มหาศาลในเสี้ยววินาทีของการเปิดจองบัตร
+### ตัวเลือกที่ 1: รันด้วย Docker Compose (แนะนำ)
+```bash
+docker compose up --build -d
+```
+> ระบบจะรัน **PostgreSQL 18** (`:5432`), **.NET 10 API** (`:5080`), และ **Next.js 16 Web** (`:3008`) พร้อม Seed ข้อมูลอีเวนต์และที่นั่งให้ใช้งานได้ทันที
+
+### ตัวเลือกที่ 2: รันแบบแยก Service (Manual)
+1. **รัน Backend API**:
+   ```powershell
+   cd ticking-api
+   dotnet run
+   ```
+   > API พร้อมทำงานที่: `http://localhost:5080`
+2. **รัน Frontend Web**:
+   ```powershell
+   cd ticking-web
+   bun run dev
+   ```
+   > เข้าใช้งานได้ที่: `http://localhost:3008`
