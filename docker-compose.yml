@@ -1,0 +1,33 @@
+services:
+  ticking-api:
+    build:
+      context: ./ticking-api
+      dockerfile: Dockerfile
+    container_name: ticking-api
+    ports:
+      - "5080:5080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5080
+    restart: unless-stopped
+    networks:
+      - ticking-network
+
+  ticking-web:
+    build:
+      context: ./ticking-web
+      dockerfile: Dockerfile
+    container_name: ticking-web
+    ports:
+      - "3008:3008"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5080
+    depends_on:
+      - ticking-api
+    restart: unless-stopped
+    networks:
+      - ticking-network
+
+networks:
+  ticking-network:
+    driver: bridge
