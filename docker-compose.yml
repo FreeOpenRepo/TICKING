@@ -7,7 +7,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ticking_db
     ports:
-      - "5440:5432"
+      - "5432:5432"
     volumes:
       - ticking_postgres_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
