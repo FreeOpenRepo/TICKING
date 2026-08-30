@@ -5,6 +5,7 @@ using ticking_api.Models;
 using ticking_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5080");
 
 // Add OpenApi & SignalR
 builder.Services.AddOpenApi();
@@ -162,3 +163,4 @@ app.Run();
 public record HoldSeatDto(string? CustomerName, string? CustomerEmail);
 public record ConfirmOrderDto(List<int> SeatIds, string? CustomerName, string? CustomerEmail, string? PaymentTransactionId);
 public record GateScanDto(string QrPayload);
+
