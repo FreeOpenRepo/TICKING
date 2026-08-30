@@ -1,4 +1,4 @@
-import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
+import { showSuccess, showError, showInfo, showWarning, showยืนยัน } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -13,7 +13,7 @@ export default function CustomerView() {
   const [heldSeats, setHeldSeats] = useState<Seat[]>([]);
   const [customerName, setCustomerName] = useState('Alex Mercer');
   const [customerEmail, setCustomerEmail] = useState('alex.mercer@enterprise.com');
-  const [confirmedOrder, setConfirmedOrder] = useState<BookingOrder | null>(null);
+  const [confirmedOrder, setยืนยันedOrder] = useState<BookingOrder | null>(null);
 
   // 600s Countdown Timer
   const [timeLeft, setTimeLeft] = useState<number>(600);
@@ -37,7 +37,7 @@ export default function CustomerView() {
       setSeats(prev => prev.map(s => s.id === payload.seatId ? { ...s, status: 'AVAILABLE', heldByCustomer: undefined } : s));
     });
 
-    connection.on('SeatConfirmed', (payload: { seatId: number; seatCode: string; orderCode: string }) => {
+    connection.on('Seatยืนยันed', (payload: { seatId: number; seatCode: string; orderCode: string }) => {
       setSeats(prev => prev.map(s => s.id === payload.seatId ? { ...s, status: 'CONFIRMED' } : s));
     });
 
@@ -125,7 +125,7 @@ export default function CustomerView() {
         paymentTransactionId: `STRIPE_CH_${Date.now()}`
       });
 
-      setConfirmedOrder(order);
+      setยืนยันedOrder(order);
       setHeldSeats([]);
       await loadSeats();
       confetti({ particleCount: 90, spread: 100, origin: { y: 0.6 } });
@@ -318,10 +318,10 @@ export default function CustomerView() {
               )}
             </div>
 
-            {/* Total Summary & Checkout Button */}
+            {/* ยอดรวม Summary & Checkout Button */}
             <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-glass)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Total ({heldSeats.length} Seats):</span>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>ยอดรวม ({heldSeats.length} Seats):</span>
                 <span className="font-mono" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--accent-vip)' }}>
                   {totalHoldAmount.toLocaleString()} THB
                 </span>
@@ -334,12 +334,12 @@ export default function CustomerView() {
                 style={{ width: '100%', padding: '14px', fontSize: '0.95rem' }}
               >
                 <CreditCard style={{ width: 18, height: 18 }} />
-                {isProcessing ? 'Authorizing Payment...' : 'Pay & Confirm Booking (PAYMENT_SUCCESS)'}
+                {isProcessing ? 'Authorizing Payment...' : 'Pay & ยืนยัน Booking (PAYMENT_SUCCESS)'}
               </button>
             </div>
           </div>
 
-          {/* Confirmed QR Ticket Display */}
+          {/* ยืนยันed QR Ticket Display */}
           {confirmedOrder && (
             <div className="glass-panel" style={{ padding: '24px', textAlign: 'center' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-emerald)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
@@ -368,4 +368,5 @@ export default function CustomerView() {
     </div>
   );
 }
+
 

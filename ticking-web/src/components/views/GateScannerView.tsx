@@ -1,4 +1,4 @@
-import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
+import { showSuccess, showError, showInfo, showWarning, showยืนยัน } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -81,7 +81,7 @@ export default function GateScannerView() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '24px' }}>
-        {/* Left: Quick Scanner Presets from Confirmed Orders */}
+        {/* Left: Quick Scanner Presets from ยืนยันed Orders */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '14px' }}>
             Recent Issued Tickets ({orders.length})
@@ -192,4 +192,5 @@ export default function GateScannerView() {
     </div>
   );
 }
+
 

@@ -43,7 +43,7 @@ export default function PaymentWebhookView() {
         {/* Orders Table */}
         <div className="glass-panel" style={{ padding: '24px' }}>
           <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '16px' }}>
-            Confirmed Paid Orders ({orders.length})
+            ยืนยันed Paid Orders ({orders.length})
           </h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '600px', overflowY: 'auto' }}>
@@ -60,7 +60,7 @@ export default function PaymentWebhookView() {
 
                 <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff' }}>{o.customerName} ({o.customerEmail})</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Seats: <strong style={{ color: 'var(--accent-zoneA)' }}>{o.seats.map(s => s.seatCode).join(', ')}</strong> • Total: <strong style={{ color: 'var(--accent-emerald)' }}>{o.totalAmount.toLocaleString()} ฿</strong>
+                  Seats: <strong style={{ color: 'var(--accent-zoneA)' }}>{o.seats.map(s => s.seatCode).join(', ')}</strong> • ยอดรวม: <strong style={{ color: 'var(--accent-emerald)' }}>{o.totalAmount.toLocaleString()} ฿</strong>
                 </div>
 
                 <div style={{ marginTop: '6px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
@@ -97,3 +97,4 @@ export default function PaymentWebhookView() {
     </div>
   );
 }
+
